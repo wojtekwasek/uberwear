@@ -1,23 +1,28 @@
-import { connect } from "react-redux";
-import { UserData } from "../../redux/userSlice";
-import { AdminSidebar } from "./Sidebar";
-import { RootState } from "../../store/mainStore";
-import { useNavigate, useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
-import { Order } from "../../models/Order";
-import { getCourierDetails, getCourierOrders, getOrderDetails, requestActivateUser, requestCancelOrder, requestDeactivateUser, requestDeleteOrder } from "./adminRequests";
-import { translateStatus } from "./AdminOrders";
-import { CancelIcon, DeleteIcon, DeliveryIcon, LockIcon, UnlockIcon } from "../../components/SVG";
-import { enqueueSnackbar } from "notistack";
-import { Courier } from "../../models/Courier";
-
+import { connect } from 'react-redux';
+import { useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import { enqueueSnackbar } from 'notistack';
+import { UserData } from '../../redux/userSlice';
+import { AdminSidebar } from './Sidebar';
+import { RootState } from '../../store/mainStore';
+import { Order } from '../../models/Order';
+import {
+    getCourierDetails,
+    getCourierOrders,
+    requestActivateUser,
+    requestCancelOrder,
+    requestDeactivateUser,
+    requestDeleteOrder,
+} from './adminRequests';
+import { translateStatus } from './AdminOrders';
+import { CancelIcon, DeleteIcon, LockIcon, UnlockIcon } from '../../components/SVG';
+import { Courier } from '../../models/Courier';
 
 function CourierDetails({ userData }: { userData: UserData }) {
     const { courierId } = useParams<{ courierId: string }>();
     const navigate = useNavigate();
 
     const [courier, setCourier] = useState<Courier | null>(null);
-
     const [courierOrders, setCourierOrders] = useState<Order[]>([]);
 
     const fetchCourier = async () => {
@@ -40,7 +45,7 @@ function CourierDetails({ userData }: { userData: UserData }) {
         } catch (error) {
             console.error('Failed to fetch courier orders:', error);
         }
-    }
+    };
 
     useEffect(() => {
         fetchCourier();
@@ -51,139 +56,126 @@ function CourierDetails({ userData }: { userData: UserData }) {
         if (!courier) return;
         try {
             await requestDeactivateUser(userData.access, courier.user_ID.toString());
-            enqueueSnackbar('Konto kuriera dezaktywowane', { variant: 'success' });
-            fetchCourier(); // Refetch the courier after deactivation
+            enqueueSnackbar('Courier deactivated', { variant: 'success' });
+            fetchCourier();
         } catch (error) {
             console.error('Failed to deactivate courier:', error);
         }
-    }
+    };
 
     const activateCourier = async () => {
         if (!courier) return;
         try {
             await requestActivateUser(userData.access, courier.user_ID.toString());
-            enqueueSnackbar('Konto kuriera aktywowane', { variant: 'success' });
-            fetchCourier(); // Refetch the courier after activation
+            enqueueSnackbar('Courier activated', { variant: 'success' });
+            fetchCourier();
         } catch (error) {
             console.error('Failed to activate courier:', error);
         }
-    }
+    };
 
-    const deleteAccount = async () => {
-        if (!courierId) return;
+    const cancelOrder = async (orderId: number) => {
         try {
-            //await requestDeleteCourier(userData.access, courierId);
-            enqueueSnackbar('Konto kuriera usunięte', { variant: 'success' });
-            navigate('/admin/couriers');
+            await requestCancelOrder(userData.access, orderId.toString());
+            enqueueSnackbar('Order cancelled', { variant: 'success' });
+            fetchCourierOrders();
         } catch (error) {
-            console.error('Failed to delete courier:', error);
+            console.error('Failed to cancel order:', error);
         }
-    }
+    };
+
+    const deleteOrder = async (orderId: number) => {
+        try {
+            await requestDeleteOrder(userData.access, orderId.toString());
+            enqueueSnackbar('Order deleted', { variant: 'success' });
+            fetchCourierOrders();
+        } catch (error) {
+            console.error('Failed to delete order:', error);
+        }
+    };
 
     return (
-        <div className="h-screen flex bg-gray-100 text-[#1E3A5F">
-            {/* Left Navigation Bar */}
-            {<AdminSidebar />}
+        <div className="min-h-[70vh] bg-[var(--soft-surface)] text-[var(--base)]">
+            <div className="page-container py-10 space-y-6">
+                <AdminSidebar />
+                <div className="space-y-6">
+                    <h1 className="text-3xl font-semibold">Courier details</h1>
 
-            {/* Main Content */}
-            <div className="flex-1 p-10">
-                {/* Caption */}
-                <h1 className="text-4xl mb-8 relative font-bold text-center border-b-yellow-400 border-b-2">
-                    Kurier: {courier?.name} {courier?.surname} (ID: {courierId})
-                </h1>
-
-                {/* Order Details */}
-                <div className="flex flex-col gap-4">
                     {courier && (
-                        <div className="flex flex-col gap-2">
-                            <div className="flex justify-between">
-                                <span className="text-xl font-bold">Środek transportu:</span>
-                                <span>{courier.delivery_transport} {courier.delivery_transport === 'Car' ? `(numer rej. ${courier.license_plate})` : ''}</span>
+                        <div className="card p-6 space-y-3">
+                            <div className="flex flex-wrap items-start justify-between gap-3">
+                                <div>
+                                    <div className="text-lg font-semibold">
+                                        {courier.name} {courier.surname}
+                                    </div>
+                                    <div className="text-sm text-[var(--muted)]">ID: {courier.courier_ID}</div>
+                                </div>
+                                <div className="flex gap-2">
+                                    {courier.status === 'Active' ? (
+                                        <button className="ghost-button bg-red-100 text-red-800" onClick={deactivateCourier}>
+                                            <LockIcon width={18} height={18} color="text-red-700" />
+                                            Deactivate
+                                        </button>
+                                    ) : (
+                                        <button className="ghost-button bg-emerald-100 text-emerald-800" onClick={activateCourier}>
+                                            <UnlockIcon width={18} height={18} color="text-emerald-700" />
+                                            Activate
+                                        </button>
+                                    )}
+                                </div>
                             </div>
-                            <div className="flex justify-between">
-                                <span className="text-xl font-bold">Adres email:</span>
-                                <span>{courier.email}</span>
+                            <div className="grid gap-3 sm:grid-cols-2">
+                                <div className="text-sm text-[var(--muted)]">Email: {courier.email}</div>
+                                <div className="text-sm text-[var(--muted)]">Phone: {courier.phone}</div>
+                                <div className="text-sm text-[var(--muted)]">Transport: {courier.delivery_transport}</div>
+                                <div className="text-sm text-[var(--muted)]">
+                                    Plate: {courier.license_plate || 'n/a'}
+                                </div>
+                                <div className="text-sm text-[var(--muted)]">Status: {courier.status}</div>
                             </div>
-                            <div className="flex justify-between">
-                                <span className="text-xl font-bold">Numer telefonu:</span>
-                                <span>{courier.phone}</span>
-                            </div>
-                            <div className="flex justify-between">
-                                <span className="text-xl font-bold">Założono konto:</span>
-                                <span>{courier.created_at ? courier.created_at : 'Brak danych'}</span>
-                            </div>
-                            <div className="flex justify-between">
-                                <span className="text-xl font-bold">Ostatnie logowanie:</span>
-                                <span>{courier.last_login ? courier.last_login : 'Nigdy'}</span>
-                            </div>
-                            <div className="flex justify-between">
-                                <span className="text-xl font-bold">Status konta:</span>
-                                <span>{courier.status}</span>
-                            </div>
-                            <div className="flex justify-center space-x-4">
-                                {courier.status === 'Active' &&
-                                    <button 
-                                        className="flex items-center space-x-1 bg-orange-100 shadow-md text-orange-700 border-orange-300 border rounded-lg p-1 hover:shadow-lg hover:bg-orange-200 hover:scale-105 transition-all duration-200"
-                                        onClick={deactivateCourier}>
-                                        <LockIcon width={20} height={20} color="text-orange-600" />
-                                        <span>Dezaktywuj konto</span>
-                                    </button>
-                                }
-                                {courier.status === 'Inactive' &&
-                                    <button 
-                                        className="flex items-center space-x-1 bg-lime-100 shadow-md text-lime-700 border-lime-300 border rounded-lg p-1 hover:shadow-lg hover:bg-lime-200 hover:scale-105 transition-all duration-200"
-                                        onClick={activateCourier}>
-                                        <UnlockIcon width={20} height={20} color="text-lime-600" />
-                                        <span>Aktywuj konto</span>
-                                    </button>
-                                }
-                                <button 
-                                    className="flex items-center space-x-1 bg-red-100 shadow-md text-red-700 border-red-300 border rounded-lg p-1 hover:shadow-lg hover:bg-red-200 hover:scale-105 transition-all duration-200"
-                                    onClick={deleteAccount}>
-                                    <DeleteIcon width={20} height={20} color="text-red-600" />
-                                    <span>Usuń konto</span>
-                                </button>
-                            </div>
+                        </div>
+                    )}
 
-                            <div className="border-t border-gray-300 pt-8 pb-4 mt-2 text-center">
-                                <h2 className="text-xl font-bold">Zamówienia obecnie obsługiwane przez kuriera</h2>
-                            </div>
-                            <div className="flex flex-wrap justify-center items-center gap-4 overflow-y-auto" style={{ maxHeight: 'calc(100vh - 600px)' }}>
-                                {courierOrders.length === 0 && (
-                                    <p className="text-center text-gray-500">Brak zamówień</p>
-                                )}
-                                {courierOrders.map(order => (
-                                    <div className="flex flex-col w-1/4 items-between bg-cyan-200 bg-opacity-80 shadow-lg mb-5 mt-2 rounded-lg p-2 hover:scale-105 transition-all duration-200 cursor-pointer"
-                                        key={order.id}
-                                        onClick={()=> navigate(`/admin/orders/${order.id}`)} >
-                                        <div className="flex text-center font-light space-x-2">
-                                            <div><DeliveryIcon width={20} height={20} color="text-gray-600"/></div>
-                                            <div>Zamówienie nr {order.id}</div>
-                                        </div>
-                                        <div className="flex justify-between font-light text-sm space-x-2">
-                                            <span className="text-gray-700">Status:</span>
-                                            <span>{translateStatus(order.status)}</span>
-                                        </div>
-                                        <div className="flex justify-between font-light text-sm space-x-2">
-                                            <span className="text-gray-700">Klient:</span>
-                                            <span>{order.client.name} {order.client.surname}</span>
+                    <div>
+                        <h2 className="text-2xl font-semibold mb-3">Orders</h2>
+                        <div className="flex flex-col gap-4">
+                            {courierOrders.length === 0 && (
+                                <p className="text-sm text-[var(--muted)]">No orders for this courier.</p>
+                            )}
+                            {courierOrders.map((order) => (
+                                <div key={order.id} className="card p-4 space-y-2">
+                                    <div className="flex items-center justify-between">
+                                        <div className="text-base font-semibold">Order #{order.id}</div>
+                                        <div className="text-xs uppercase tracking-[0.12em] text-[var(--muted)]">
+                                            {translateStatus(order.status)}
                                         </div>
                                     </div>
-                                )) 
-                                }
-                            </div>
-
+                                    <div className="text-sm text-[var(--muted)]">Date: {order.date}</div>
+                                    <div className="flex flex-wrap gap-2">
+                                        <button className="ghost-button text-xs" onClick={() => navigate(`/admin/orders/${order.id}`)}>
+                                            Open
+                                        </button>
+                                        {order.status !== 'Canceled' && (
+                                            <button className="ghost-button bg-orange-100 text-orange-800 text-xs" onClick={() => cancelOrder(order.id)}>
+                                                <CancelIcon width={16} height={16} color="text-orange-700" />
+                                                Cancel
+                                            </button>
+                                        )}
+                                        <button className="ghost-button bg-red-100 text-red-800 text-xs" onClick={() => deleteOrder(order.id)}>
+                                            <DeleteIcon width={16} height={16} color="text-red-700" />
+                                            Delete
+                                        </button>
+                                    </div>
+                                </div>
+                            ))}
                         </div>
-                        
-                    )}
+                    </div>
                 </div>
             </div>
         </div>
     );
 }
 
-
 const mapStateToProps = (state: RootState) => ({ userData: state.user.user });
-
 
 export default connect(mapStateToProps)(CourierDetails);

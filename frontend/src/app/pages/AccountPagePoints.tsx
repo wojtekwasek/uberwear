@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { connect } from 'react-redux';
 import { AccountSidebar } from './AccountSidebar';
 import { getLoyaltyPoints } from '../requests';
-import { connect } from 'react-redux';
 import { RootState } from '../store/mainStore';
 import { UserData } from '../redux/userSlice';
 
@@ -23,23 +22,20 @@ export function AccountPagePoints({ userData }: { userData: UserData }) {
   }, [userData.access]);
 
   return (
-    <div className="h-screen flex bg-gray-100 text-[#1E3A5F] font-playfair">
-      {/* Left Navigation Bar */}
-      <AccountSidebar />
-
-      {/* Main Content */}
-      <div className="flex-1 p-10">
-      <h1 className="text-4xl mb-8 relative font-bold text-center border-b-yellow-400 border-b-2">
-        Punkty lojalnościowe
-        </h1>
-      <ul>
-         
-            <li className="mb-5 p-4 bg-white shadow-md rounded-md">
-              <div className="text-lg">Ilość punktów, które posiadasz: {points}</div>
-            </li>
-          
-        </ul>
+    <div className="min-h-[70vh] bg-[var(--soft-surface)] text-[var(--base)]">
+      <div className="page-container py-10 space-y-6">
+        <AccountSidebar />
+        <h1 className="text-3xl font-semibold">Loyalty points</h1>
+        <div className="card p-6">
+          <div className="text-sm font-semibold uppercase tracking-[0.12em] text-[var(--dark-yellow)]">
+            Current balance
+          </div>
+          <div className="mt-3 text-4xl font-bold text-[var(--base)]">{points}</div>
+          <p className="mt-2 text-sm text-[var(--muted)]">
+            Points are added for paid and delivered orders. Keep shopping to unlock perks.
+          </p>
         </div>
+      </div>
     </div>
   );
 }

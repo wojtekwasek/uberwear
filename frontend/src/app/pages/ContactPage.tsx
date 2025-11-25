@@ -1,86 +1,38 @@
+import React from 'react';
+
 export function ContactPage() {
   return (
-    <div
-      style={{
-        height: '100vh',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        background: '#F3F4F6',
-        color: '#1E3A5F',
-        fontFamily: "'Playfair Display', serif",
-        flexDirection: 'column',
-        textAlign: 'center',
-        padding: '20px',
-      }}
-    >
-      <h1
-        style={{
-          position: 'relative',
-          fontSize: '3.0rem',
-          marginBottom: '1rem',
-        }}
-      >
-        Kontakt
-        <span
-          style={{
-            position: 'absolute',
-            left: '50%',
-            transform: 'translateX(-50%)',
-            bottom: -10,
-            width: '90%',
-            height: '3px',
-            backgroundColor: 'rgba(255, 193, 7, 0.8)',
-          }}
-        ></span>
-      </h1>
-      <p style={{ fontSize: '1.6rem', lineHeight: '1.6', marginBottom: '2rem' }}>
-        Masz pytania? Skontaktuj się z nami! Jesteśmy tutaj, aby pomóc Ci w każdej sprawie dotyczącej naszej firmy.
-      </p>
-      <div>
-        <h2 style={{ position: 'relative', fontSize: '2.6rem', marginBottom: '1rem' }}>
-          Dane kontaktowe
-          <span
-            style={{
-              position: 'absolute',
-              left: '50%',
-              transform: 'translateX(-50%)',
-              bottom: -5,
-              width: '70%',
-              height: '3px',
-              backgroundColor: 'rgba(255, 193, 7, 0.8)',
-            }}
-          ></span>
-        </h2>
-        <p style={{ fontSize: '1.35rem', marginBottom: '0.5rem' }}>
-          📧 Email: kontakt@quickfit.pl
-        </p>
-        <p style={{ fontSize: '1.35rem', marginBottom: '0.5rem' }}>
-          📞 Telefon: +48 123 456 789
-        </p>
-        <p style={{ fontSize: '1.35rem', marginBottom: '2rem' }}>
-          🏢 Adres: ul. Bawełniana 65, 30-123 Kraków
-        </p>
-      </div>
-      <div>
-        <h2 style={{ position: 'relative', fontSize: '2.4rem', marginBottom: '1rem' }}>
-          Chcesz założyć własny sklep?
-          <span
-            style={{
-              position: 'absolute',
-              left: '50%',
-              transform: 'translateX(-50%)',
-              bottom: -5,
-              width: '40%',
-              height: '3px',
-              backgroundColor: 'rgba(255, 193, 7, 0.8)',
-            }}
-          ></span>
-        </h2>
-        <p style={{ fontSize: '1.35rem', marginBottom: '1rem' }}>
-          QuickFit oferuje wyjątkową możliwość rejestracji własnego sklepu. Rozpocznij sprzedaż w naszym systemie i
-          dotrzyj do tysięcy klientów w całej Polsce. Napisz do nas!
-        </p>
+    <div className="min-h-[70vh] bg-[var(--soft-surface)] text-[var(--navy)]">
+      <div className="page-container py-12">
+        <div className="card p-8">
+          <div className="flex flex-col gap-4">
+            <div className="text-sm font-semibold uppercase tracking-[0.15em] text-[var(--dark-yellow)]">
+              Contact
+            </div>
+            <h1 className="text-3xl font-semibold">Need a quick answer?</h1>
+            <p className="text-[var(--muted)] leading-relaxed">
+              Drop us a line if you want to onboard your shop, report an issue, or ask about the project. We keep replies
+              short and practical.
+            </p>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="rounded-2xl border border-[var(--dark-yellow)]/30 bg-white px-4 py-3">
+                <div className="text-sm font-semibold text-[var(--navy)]">Email</div>
+                <div className="text-sm text-[var(--muted)]">contact@uberwear.app</div>
+              </div>
+              <div className="rounded-2xl border border-[var(--dark-yellow)]/30 bg-white px-4 py-3">
+                <div className="text-sm font-semibold text-[var(--navy)]">Phone</div>
+                <div className="text-sm text-[var(--muted)]">+48 123 456 789</div>
+              </div>
+              <div className="rounded-2xl border border-[var(--dark-yellow)]/30 bg-white px-4 py-3 sm:col-span-2">
+                <div className="text-sm font-semibold text-[var(--navy)]">Join as a shop owner</div>
+                <div className="text-sm text-[var(--muted)]">
+                  Tell us about your store and we will plug you into the Uberwear catalog. Minimal paperwork, quick setup,
+                  and clear status updates.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

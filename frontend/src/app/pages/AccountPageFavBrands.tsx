@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
+import { connect } from 'react-redux';
 import { AccountSidebar } from './AccountSidebar';
 import { getOrdersByClient } from '../requests';
-import { connect } from 'react-redux';
 import { RootState } from '../store/mainStore';
 import { UserData } from '../redux/userSlice';
 
@@ -17,7 +17,7 @@ export function AccountPageFavBrands({ userData }: { userData: UserData }) {
     const fetchFavBrands = async () => {
       try {
         const data = await getOrdersByClient(userData.access, userData.clid);
-        const brandCount: { [key: string]: number } = {};
+        const brandCount: Record<string, number> = {};
 
         data.forEach((order: any) => {
           order.products.forEach((product: any) => {
@@ -44,23 +44,23 @@ export function AccountPageFavBrands({ userData }: { userData: UserData }) {
   }, [userData.access]);
 
   return (
-    <div className="h-screen flex bg-gray-100 text-[#1E3A5F] font-playfair">
-      {/* Left Navigation Bar */}
-      <AccountSidebar />
-
-      {/* Main Content */}
-      <div className="flex-1 p-10">
-        <h1 className="text-4xl mb-8 relative font-bold text-center border-b-yellow-400 border-b-2">
-          Ulubione Marki
-        </h1>
-        <ul>
+    <div className="min-h-[70vh] bg-[var(--soft-surface)] text-[var(--base)]">
+      <div className="page-container py-10 space-y-6">
+        <AccountSidebar />
+        <h1 className="text-3xl font-semibold">Favorite brands</h1>
+        <div className="space-y-3">
           {favBrands.map((brand, index) => (
-            <li key={index} className="mb-5 p-4 bg-white shadow-md rounded-md">
-              <div className="text-xl font-bold">{brand.brand}</div>
-              <div className="text-lg">Ilość zamówionych ubrań: {brand.count}</div>
-            </li>
+            <div key={index} className="card p-4">
+              <div className="flex items-center justify-between">
+                <div className="text-lg font-semibold text-[var(--base)]">{brand.brand}</div>
+                <div className="text-sm text-[var(--muted)]">{brand.count} items ordered</div>
+              </div>
+            </div>
           ))}
-        </ul>
+          {favBrands.length === 0 && (
+            <div className="text-sm text-[var(--muted)]">No favorite brands yet.</div>
+          )}
+        </div>
       </div>
     </div>
   );

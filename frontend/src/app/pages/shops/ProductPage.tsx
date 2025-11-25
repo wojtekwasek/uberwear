@@ -8,11 +8,10 @@ import { enqueueSnackbar } from 'notistack';
 export function ProductPage() {
     const navigate = useNavigate();
     const { shopId, category, color } = useParams<any>();
-
     const [products, setProducts] = useState<Product[]>([]);
     const [sizes, setSizes] = useState<string[]>([]);
-
-    const [selectedProduct, setSelectedProduct] = useState<Product|null>(null);
+    const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+    const { addToCart, removeFromCart } = useCart();
 
     useEffect(() => {
         const fetchProducts = async () => {
@@ -21,7 +20,7 @@ export function ProductPage() {
                 setProducts(productData);
                 setSelectedProduct(productData[0]);
                 const sizesTemp: string[] = [];
-                productData.forEach(product => {
+                productData.forEach((product) => {
                     if (!sizesTemp.includes(product.size)) {
                         sizesTemp.push(product.size);
                     }
@@ -33,115 +32,93 @@ export function ProductPage() {
         };
 
         fetchProducts();
-    }, []);
-
-    const { addToCart, removeFromCart } = useCart();
+    }, [shopId, category, color]);
 
     const handleSizeSelect = (event: React.ChangeEvent<HTMLSelectElement>) => {
-        const product = products.find(product => product.size === event.target.value);
+        const product = products.find((product) => product.size === event.target.value);
         if (!product) {
-            alert('Wybrano nieprawidłowy rozmiar!');
+            alert('Invalid size selected');
             return;
         }
         setSelectedProduct(product);
     };
 
-
-
     const handleAddToCart = () => {
         if (!selectedProduct) {
-            alert('Wybrano nieprawidłowy produkt!');
+            alert('Invalid product selected');
             return;
         }
 
         addToCart(selectedProduct);
 
-        enqueueSnackbar(`Dodano do koszyka: ${selectedProduct.name} - kolor ${color} w rozmiarze ${selectedProduct.size} za ${selectedProduct.price} zł`, { 
+        enqueueSnackbar(`Added to cart: ${selectedProduct.name} - ${color} size ${selectedProduct.size} for ${selectedProduct.price} PLN`, {
             variant: 'success',
-            action: (key) => (<>
-                <button 
-                className="py-1 px-3 text-cyan-200 bg-black bg-opacity-0 hover:bg-opacity-15 rounded-md transition-all duration-200"
-                onClick={() => { 
-                    navigate('/cart');
-                }}>
-                    Sprawdź koszyk
-                </button>
-                <button 
-                className="py-1 px-3 text-rose-200 bg-black bg-opacity-0 hover:bg-opacity-15 rounded-md transition-all duration-200"
-                onClick={() => { 
-                    removeFromCart(selectedProduct.product_ID);
-                }}>
-                    Cofnij
-                </button></>
-            )
+            action: () => (
+                <div className="flex gap-2">
+                    <button
+                        className="ghost-button text-xs"
+                        onClick={() => navigate('/cart')}
+                    >
+                        View cart
+                    </button>
+                    <button
+                        className="ghost-button text-xs"
+                        onClick={() => removeFromCart(selectedProduct.product_ID)}
+                    >
+                        Undo
+                    </button>
+                </div>
+            ),
         });
     };
 
     return (
-        <div
-            style={{
-                minHeight: '100vh',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                background: '#F3F4F6',
-                color: '#1E3A5F',
-                fontFamily: "'Playfair Display', serif",
-                padding: '20px',
-            }}
-        >
-            <h1 style={{ marginBottom: '40px', fontSize: '2.5rem', fontWeight: 'bold' }}>
-                {selectedProduct?.name} - kolor {color?.toLowerCase()}
-            </h1>
+        <div className="min-h-[70vh] bg-[var(--soft-surface)] text-[var(--navy)]">
+            <div className="page-container py-10 grid gap-8 lg:grid-cols-2">
+                <div className="card overflow-hidden">
+                    <img
+                        src={`${selectedProduct?.image}`}
+                        alt={`${selectedProduct?.name} - ${color?.toLowerCase()}`}
+                        className="h-full w-full bg-white object-contain"
+                    />
+                </div>
+                <div className="space-y-4">
+                    <div className="text-sm font-semibold uppercase tracking-[0.12em] text-[var(--dark-yellow)]">
+                        {category}
+                    </div>
+                    <h1 className="text-3xl font-semibold">
+                        {selectedProduct?.name} · {color?.toLowerCase()}
+                    </h1>
+                    <div className="text-xl font-bold text-[var(--navy)]">{selectedProduct?.price} PLN</div>
 
-            {/* Display the selected hoodie */}
-            <div style={{ marginTop: '40px', textAlign: 'center' }}>
-                <img
-                    src={`${selectedProduct?.image}`}
-                    alt={`${selectedProduct?.name} - kolor ${color?.toLowerCase()}`}
-                    style={{
-                        width: '100%',
-                        height: '100%',
-                        objectFit: 'contain',
-                        marginBottom: '10px',
-                        border: '3px solid #FFBF00',
-                    }}
-                />
-                <p style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#1E3A5F' }}>
-                    {selectedProduct?.price} zł
-                </p>
+                    <div className="space-y-2">
+                        <label htmlFor="size-select" className="text-sm font-semibold text-[var(--navy)]">
+                            Choose size
+                        </label>
+                        <select
+                            id="size-select"
+                            value={selectedProduct?.size}
+                            onChange={handleSizeSelect}
+                            className="text-search-input w-32"
+                        >
+                            {sizes.map((size) => (
+                                <option key={size} value={size}>
+                                    {size}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+
+                    <div className="flex flex-wrap gap-3">
+                        <button onClick={handleAddToCart} className="pill-button">
+                            Add to cart
+                        </button>
+                        <button className="ghost-button" onClick={() => navigate(`/offer/${shopId}`)}>
+                            Back to shop
+                        </button>
+                    </div>
+                </div>
             </div>
-
-            <div style={{ marginTop: '20px' }}>
-                <label htmlFor="size-select" style={{ fontSize: '1.2rem' }}>
-                    Wybierz rozmiar:
-                </label>
-                <select
-                    id="size-select"
-                    value={selectedProduct?.size}
-                    onChange={handleSizeSelect}
-                    style={{
-                        padding: '8px',
-                        fontSize: '1rem',
-                        margin: '10px',
-                        borderRadius: '4px',
-                        width: '65px',
-                    }}
-                >
-                    {sizes.map((size) => (
-                        <option key={size} value={size}>
-                            {size}
-                        </option>
-                    ))}
-                </select>
-            </div>
-
-            <button
-                onClick={handleAddToCart}
-                className="px-4 py-2 bg-[#1E3A5F] text-white rounded-md shadow-md hover:shadow-lg text-lg mt-5 hover:scale-110 transition-all duration-200"
-            >
-                Dodaj do koszyka
-            </button>
         </div>
     );
 }

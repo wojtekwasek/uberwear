@@ -1,27 +1,28 @@
-import React, { useState, useEffect } from 'react';
-import { getUserInfo, updateUserInfo } from '../requests';
-import { RootState } from '../store/mainStore';
+import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
-import { UserData } from '../redux/userSlice';
+import { enqueueSnackbar } from 'notistack';
 import { AccountSidebar } from './AccountSidebar';
+import { getUserInfo, updateUserInfo } from '../requests';
+import { UserData } from '../redux/userSlice';
+import { RootState } from '../store/mainStore';
 
 type FormData = {
-  Imię: string;
-  Nazwisko: string;
-  Email: string;
-  'Numer Telefonu': string;
-  Hasło: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  password: string;
 };
 
 function AccountPageData({ userData }: { userData: UserData }) {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [currentField, setCurrentField] = useState<keyof FormData | null>(null);
   const [formData, setFormData] = useState<FormData>({
-    Imię: '',
-    Nazwisko: '',
-    Email: '',
-    'Numer Telefonu': '',
-    Hasło: '********',
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
+    password: '********',
   });
 
   useEffect(() => {
@@ -29,11 +30,11 @@ function AccountPageData({ userData }: { userData: UserData }) {
       try {
         const userInfo = await getUserInfo(userData.access);
         setFormData({
-          Imię: userInfo.user.name,
-          Nazwisko: userInfo.user.surname,
-          Email: userInfo.user.email,
-          'Numer Telefonu': userInfo.user.phone,
-          Hasło: '********',
+          firstName: userInfo.user.name,
+          lastName: userInfo.user.surname,
+          email: userInfo.user.email,
+          phone: userInfo.user.phone,
+          password: '********',
         });
       } catch (error) {
         console.error('Failed to fetch user info:', error);
@@ -66,69 +67,67 @@ function AccountPageData({ userData }: { userData: UserData }) {
     e.preventDefault();
     try {
       await updateUserInfo(userData.access, formData);
+      enqueueSnackbar('Profile updated', { variant: 'success' });
       closePopup();
     } catch (error) {
       console.error('Failed to update user info:', error);
+      enqueueSnackbar('Could not update profile', { variant: 'error' });
     }
   };
 
   return (
-    <div className="h-screen flex bg-gray-100 text-[#1E3A5F] font-playfair">
-      {/* Left Navigation Bar */}
-      <AccountSidebar />
-
-      {/* Main Content */}
-      <div className="flex-1 p-10">
-        <h1 className="text-4xl mb-8 relative font-bold text-center border-b-yellow-400 border-b-2">
-          Twoje dane
-        </h1>
-        {Object.entries(formData).map(([field, value]) => (
-          <div
-            key={field}
-            className="flex items-center justify-between border-2 border-yellow-500 rounded-md p-4 mb-5 bg-[#1E3A5F]"
-          >
-            <div className="text-lg font-light text-white">
-              <strong>{field}:</strong> {value}
-            </div>
-            <button
-              className="p-2 rounded-md bg-[#1E3A5F] text-white font-bold border-2 border-yellow-500 text-lg cursor-pointer hover:scale-110 transition-all duration-200"
-              onClick={() => handleEditClick(field as keyof FormData)}
+    <div className="min-h-[70vh] bg-[var(--soft-surface)] text-[var(--base)]">
+      <div className="page-container py-10 space-y-6">
+        <AccountSidebar />
+        <h1 className="text-3xl font-semibold">Your profile</h1>
+        <div className="space-y-4">
+          {Object.entries(formData).map(([field, value]) => (
+            <div
+              key={field}
+              className="card flex items-center justify-between gap-4 p-4"
             >
-              Edytuj
-            </button>
-          </div>
-        ))}
+              <div className="text-sm text-[var(--muted)]">
+                <span className="font-semibold text-[var(--base)] capitalize">{field.replace(/([A-Z])/g, ' $1')}</span>
+                <span className="ml-2 text-[var(--base)]">{value}</span>
+              </div>
+              <button
+                className="pill-button"
+                onClick={() => handleEditClick(field as keyof FormData)}
+              >
+                Edit
+              </button>
+            </div>
+          ))}
+        </div>
+
         {isPopupOpen && currentField && (
-          <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex justify-center items-center">
-            <div className="bg-white rounded-lg p-5 w-96 shadow-lg">
-              <h2 className="mb-5 text-2xl font-bold text-[#1E3A5F]">
-                Edytuj {currentField}
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
+            <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
+              <h2 className="mb-4 text-xl font-semibold text-[var(--base)]">
+                Update {currentField.replace(/([A-Z])/g, ' $1')}
               </h2>
-              <form onSubmit={handleSubmit}>
-                <div className="mb-5">
-                  <label className="block mb-2 text-lg font-medium">
-                    Nowa wartość:
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div>
+                  <label className="mb-2 block text-sm font-medium text-[var(--muted)]">
+                    New value
                   </label>
                   <input
-                    type={currentField === 'Hasło' ? 'password' : 'text'}
+                    type={currentField === 'password' ? 'password' : 'text'}
                     value={formData[currentField]}
                     onChange={handleChange}
-                    className="w-full p-2 rounded-md border-2 border-yellow-500 text-lg"
+                    className="text-search-input w-full"
                   />
                 </div>
-                <div className="flex justify-end">
+                <div className="flex justify-end gap-2">
                   <button
                     type="button"
                     onClick={closePopup}
-                    className="py-1 px-2 rounded-md bg-red-600 text-white shadow-md border-red-900 border text-lg mr-2 cursor-pointer hover:scale-110 transition-all duration-200"
+                    className="ghost-button"
                   >
-                    Anuluj
+                    Cancel
                   </button>
-                  <button
-                    type="submit"
-                    className="py-1 px-2 rounded-md bg-[#1E3A5F] text-white shadow-md border-black border text-lg cursor-pointer hover:scale-110 transition-all duration-200"
-                  >
-                    Zapisz
+                  <button type="submit" className="pill-button">
+                    Save
                   </button>
                 </div>
               </form>

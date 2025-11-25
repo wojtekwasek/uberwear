@@ -1,121 +1,82 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { connect } from 'react-redux';
 import { AdminSidebar } from './Sidebar';
-import { getOrders } from '../../requests';
 import { UserData } from '../../redux/userSlice';
 import { RootState } from '../../store/mainStore';
-import { connect } from 'react-redux';
-import { Order } from '../../models/Order';
-import { DeliveryIcon, MailIcon, PhoneIcon } from '../../components/SVG';
+import { PhoneIcon, MailIcon } from '../../components/SVG';
 import { Courier } from '../../models/Courier';
 import { getCouriers } from './adminRequests';
 
-export const translateStatus = (status: string) => {
-    switch (status) {
-        case 'Pending':
-            return 'Oczekujące na płatność';
-        case 'Shipped':
-            return 'W trakcie realizacji';
-        case 'Delivered':
-            return 'Dostarczone';
-        case 'Canceled':
-            return 'Anulowane';
-        default:
-            return status;
-    }
-}
-
-const AdminCouriers = ({userData}: {userData : UserData}) => {
-
+const AdminCouriers = ({ userData }: { userData: UserData }) => {
     const [couriersList, setCouriersList] = useState<Courier[]>([]);
     const [startIndex, setStartIndex] = useState(0);
-    const [pageSize] = useState(10); // Number of items per page
-
+    const [pageSize] = useState(10);
 
     const fetchCouriers = async (start: number) => {
         try {
-          const couriers = await getCouriers(userData.access, start, pageSize);
-          setCouriersList(couriers);
+            const couriers = await getCouriers(userData.access, start, pageSize);
+            setCouriersList(couriers);
         } catch (error) {
-          console.error('Failed to fetch couriers:', error);
+            console.error('Failed to fetch couriers:', error);
         }
     };
-
 
     useEffect(() => {
         fetchCouriers(startIndex);
     }, [startIndex]);
 
-    const handleNextPage = () => {
-        setStartIndex(startIndex + pageSize);
-    };
-
-    const handlePreviousPage = () => {
-        if (startIndex > 0) {
-            setStartIndex(startIndex - pageSize);
-        }
-    };
-
-      return (
-        <div className="h-screen flex bg-gray-100 text-[#1E3A5F]">
-            {/* Left Navigation Bar */}
-            <AdminSidebar />
-
-            {/* Main Content */}
-            <div className="flex-1 p-10">
-                {/* Caption */}
-                <h1 className="text-4xl mb-8 relative font-bold text-center border-b-yellow-400 border-b-2">
-                    Dostępni Kurierzy
-                </h1>
-
-                {/* Orders */}
-                <div className="flex flex-col gap-4 overflow-y-auto" style={{ maxHeight: 'calc(100vh - 200px)' }}>
+    return (
+        <div className="min-h-[70vh] bg-[var(--soft-surface)] text-[var(--base)]">
+            <div className="page-container py-10 space-y-6">
+                <AdminSidebar />
+                <h1 className="mb-6 text-3xl font-semibold">Couriers</h1>
+                <div className="flex flex-col gap-4">
                     {couriersList.length === 0 && (
-                        <p className="text-center text-gray-500">Brak kurierów</p>
+                        <p className="text-sm text-[var(--muted)]">No couriers.</p>
                     )}
-                    {couriersList.map(courier => (
+                    {couriersList.map((courier) => (
                         <Link
                             to={`/admin/couriers/${courier.courier_ID}`}
                             key={courier.courier_ID}
-                            className="flex items-center justify-between p-4 bg-white shadow-md rounded-md hover:shadow-lg transition-all duration-200"
+                            className="card flex items-center justify-between p-4 text-left transition hover:-translate-y-1"
                         >
                             <div>
-                                <h2 className="text-xl font-bold">{courier.name} {courier.surname} (ID:{courier.courier_ID})</h2>
-                                {courier.delivery_transport === 'Car' ?
-                                    <p className="text-sm text-gray-500">{courier.delivery_transport} - {courier.license_plate}</p>
-                                :
-                                    <p className="text-sm text-gray-500">{courier.delivery_transport.length > 0 ? courier.delivery_transport : 'Other transport'}</p>
-                                }
+                                <h2 className="text-lg font-semibold">
+                                    {courier.name} {courier.surname} (ID:{courier.courier_ID})
+                                </h2>
+                                <p className="text-xs uppercase tracking-[0.12em] text-[var(--muted)]">
+                                    {courier.delivery_transport} {courier.license_plate ? `· ${courier.license_plate}` : ''}
+                                </p>
                             </div>
-                            <div className="flex-col text-right">
-                                <div className="flex space-x-1 justify-end">
-                                    <PhoneIcon width={20} height={20} color="text-gray-500" />
-                                    <p className="text-sm text-gray-500">{courier.phone}</p>
+                            <div className="flex flex-col items-end text-sm text-[var(--muted)]">
+                                <div className="flex items-center gap-2">
+                                    <PhoneIcon width={18} height={18} color="text-gray-500" />
+                                    <span>{courier.phone}</span>
                                 </div>
-                                <div className="flex space-x-1 justify-end">
-                                    <MailIcon width={20} height={20} color="text-gray-500" />
-                                    <p className="text-sm text-gray-500">{courier.email}</p>
+                                <div className="flex items-center gap-2">
+                                    <MailIcon width={18} height={18} color="text-gray-500" />
+                                    <span>{courier.email}</span>
                                 </div>
                             </div>
                         </Link>
                     ))}
                 </div>
 
-                {/* Pagination Controls */}
-                <div className="flex justify-between mt-4">
+                <div className="flex justify-between">
                     <button
-                        onClick={handlePreviousPage}
+                        onClick={() => setStartIndex(Math.max(0, startIndex - pageSize))}
                         disabled={startIndex === 0}
-                        className="px-4 py-2 bg-blue-500 text-white rounded-lg disabled:hover:scale-100 hover:scale-110 transition-all duration-200 disabled:opacity-50"
+                        className="ghost-button disabled:opacity-50"
                     >
-                        Poprzednia strona
+                        Previous page
                     </button>
                     <button
-                        onClick={handleNextPage}
+                        onClick={() => setStartIndex(startIndex + pageSize)}
                         disabled={couriersList.length < pageSize}
-                        className="px-4 py-2 bg-blue-500 text-white rounded-lg disabled:hover:scale-100 hover:scale-110 transition-all duration-200 disabled:opacity-50"
+                        className="ghost-button disabled:opacity-50"
                     >
-                        Następna strona
+                        Next page
                     </button>
                 </div>
             </div>
@@ -123,9 +84,6 @@ const AdminCouriers = ({userData}: {userData : UserData}) => {
     );
 };
 
-
-
 const mapStateToProps = (state: RootState) => ({ userData: state.user.user });
-
 
 export default connect(mapStateToProps)(AdminCouriers);

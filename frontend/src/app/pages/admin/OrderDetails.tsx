@@ -1,44 +1,42 @@
-import { connect } from "react-redux";
-import { UserData } from "../../redux/userSlice";
-import { AdminSidebar } from "./Sidebar";
-import { RootState } from "../../store/mainStore";
-import { useNavigate, useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
-import { Order } from "../../models/Order";
-import { getOrderDetails, requestCancelOrder, requestDeleteOrder } from "./adminRequests";
-import { translateStatus } from "./AdminOrders";
-import { CancelIcon, DeleteIcon } from "../../components/SVG";
-import { enqueueSnackbar } from "notistack";
-
+import { connect } from 'react-redux';
+import { useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import { enqueueSnackbar } from 'notistack';
+import { UserData } from '../../redux/userSlice';
+import { AdminSidebar } from './Sidebar';
+import { RootState } from '../../store/mainStore';
+import { Order } from '../../models/Order';
+import { getOrderDetails, requestCancelOrder, requestDeleteOrder } from './adminRequests';
+import { translateStatus } from './AdminOrders';
+import { CancelIcon, DeleteIcon } from '../../components/SVG';
 
 export const translatePaymentStatus = (status: string) => {
     switch (status) {
         case 'Done':
-            return 'Opłacono';
+            return 'Paid';
         case 'Awaits':
-            return 'Jeszcze nie opłacono';
+            return 'Awaiting payment';
         case 'Canceled':
-            return 'Anulowana';
+            return 'Cancelled';
         default:
             return status;
     }
-}
+};
 
 export const getTotalPrice = (order: Order) => {
     return order.products.reduce((acc, product) => acc + product.product.price * product.ordered_amount, 0);
-}
+};
 
 function OrderDetails({ userData }: { userData: UserData }) {
     const { orderId } = useParams<{ orderId: string }>();
     const navigate = useNavigate();
-
     const [order, setOrder] = useState<Order | null>(null);
 
     const fetchOrder = async () => {
         try {
             if (orderId !== undefined) {
-                const order = await getOrderDetails(userData.access, orderId);
-                setOrder(order);
+                const fetched = await getOrderDetails(userData.access, orderId);
+                setOrder(fetched);
             }
         } catch (error) {
             console.error('Failed to fetch orders:', error);
@@ -53,107 +51,116 @@ function OrderDetails({ userData }: { userData: UserData }) {
         if (!orderId) return;
         try {
             await requestCancelOrder(userData.access, orderId);
-            enqueueSnackbar('Anulowano zamówienie nr ' + orderId, { variant: 'success' });
-            fetchOrder(); // Refetch the order after cancellation
+            enqueueSnackbar('Order cancelled', { variant: 'success' });
+            fetchOrder();
         } catch (error) {
             console.error('Failed to cancel order:', error);
         }
-    }
+    };
 
     const deleteOrder = async () => {
         if (!orderId) return;
         try {
             await requestDeleteOrder(userData.access, orderId);
-            enqueueSnackbar('Usunięto zamówienie nr ' + orderId, { variant: 'success' });
+            enqueueSnackbar('Order removed', { variant: 'success' });
             navigate('/admin/orders');
         } catch (error) {
             console.error('Failed to delete order:', error);
         }
-    }
+    };
 
     return (
-        <div className="h-screen flex bg-gray-100 text-[#1E3A5F">
-            {/* Left Navigation Bar */}
-            {<AdminSidebar />}
+        <div className="min-h-[70vh] bg-[var(--soft-surface)] text-[var(--base)]">
+            <div className="page-container py-10 space-y-6">
+                <AdminSidebar />
+                <h1 className="mb-6 text-3xl font-semibold">Order #{orderId}</h1>
 
-            {/* Main Content */}
-            <div className="flex-1 p-10">
-                {/* Caption */}
-                <h1 className="text-4xl mb-8 relative font-bold text-center border-b-yellow-400 border-b-2">
-                    Zamówienie nr {orderId}
-                </h1>
-
-                {/* Order Details */}
-                <div className="flex flex-col gap-4">
-                    {order && (
-                        <div className="flex flex-col gap-2">
-                            <div className="flex justify-between">
-                                <span className="text-xl font-bold">Status:</span>
-                                <span>{translateStatus(order.status)}</span>
+                {order && (
+                    <div className="card space-y-4 p-6">
+                        <div className="grid gap-3 sm:grid-cols-2">
+                            <div className="text-sm text-[var(--muted)]">
+                                <div className="text-xs uppercase tracking-[0.12em] text-[var(--dark-yellow)]">Status</div>
+                                <div className="text-base font-semibold text-[var(--base)]">{translateStatus(order.status)}</div>
                             </div>
-                            <div className="flex justify-between">
-                                <span className="text-xl font-bold">Data zamówienia:</span>
-                                <span>{order.date}</span>
+                            <div className="text-sm text-[var(--muted)]">
+                                <div className="text-xs uppercase tracking-[0.12em] text-[var(--dark-yellow)]">Date</div>
+                                <div className="text-base font-semibold text-[var(--base)]">{order.date}</div>
                             </div>
-                            <div className="flex justify-between">
-                                <span className="text-xl font-bold">Klient:</span>
-                                <span className="cursor-pointer hover:scale-105 transition-all duration-200"
-                                onClick={()=> navigate(`/admin/clients/${order.client.id}`)}>{order.client.name} {order.client.surname}</span>
-                            </div>
-                            <div className="flex justify-between">
-                                <span className="text-xl font-bold">Płatność:</span>
-                                <span>{translatePaymentStatus(order.payment.status)} ({order.payment.method})</span>
-                            </div>
-                            <div className="flex justify-between">
-                                <span className="text-xl font-bold">Kurier:</span>
-                                <span className="cursor-pointer hover:scale-105 transition-all duration-200" 
-                                onClick={()=> navigate(`/admin/couriers/${order.courier.id}`)}>
-                                    {order.courier.name} {order.courier.surname} {order.courier.license_plate ? `(${order.courier.license_plate})`:''}
-                                </span>
-                            </div>
-                            <div className="flex justify-between">
-                                <span className="text-xl font-bold">Adres dostawy:</span>
-                                <span>{order.address.street}, {order.address.city} {order.address.postcode}</span>
-                            </div>
-                            <div className="flex justify-between border-b border-gray-300 py-1">
-                                <span className="text-xl font-bold">Produkty:</span>
-                                <div className="flex flex-col gap-2">
-                                    {order.products.map(product => (
-                                        <div key={product.product.id} className="flex justify-between">
-                                            <span>{product.product.name} ({product.ordered_amount} szt.)</span>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                            <div className="flex justify-end">
-                                <span>Łącznie {getTotalPrice(order)} zł</span>
-                            </div>
-                            <div className="flex justify-center space-x-4">
-                                {order.status !== 'Canceled' && order.status !== 'Delivered' &&
-                                    <button 
-                                        className="flex items-center space-x-1 bg-orange-100 shadow-md text-orange-700 border-orange-300 border rounded-lg p-1 hover:shadow-lg hover:bg-orange-200 hover:scale-105 transition-all duration-200"
-                                        onClick={cancelOrder}>
-                                        <CancelIcon width={20} height={20} color="text-orange-600" />
-                                        <span>Anuluj zamówienie</span>
-                                    </button>
-                                }
-                                <button 
-                                    className="flex items-center space-x-1 bg-red-100 shadow-md text-red-700 border-red-300 border rounded-lg p-1 hover:shadow-lg hover:bg-red-200 hover:scale-105 transition-all duration-200"
-                                    onClick={deleteOrder}>
-                                    <DeleteIcon width={20} height={20} color="text-red-600" />
-                                    <span>Usuń zamówienie</span>
+                            <div className="text-sm text-[var(--muted)]">
+                                <div className="text-xs uppercase tracking-[0.12em] text-[var(--dark-yellow)]">Client</div>
+                                <button
+                                    className="ghost-button mt-1"
+                                    onClick={() => navigate(`/admin/clients/${order.client.id}`)}
+                                >
+                                    {order.client.name} {order.client.surname}
                                 </button>
                             </div>
+                            <div className="text-sm text-[var(--muted)]">
+                                <div className="text-xs uppercase tracking-[0.12em] text-[var(--dark-yellow)]">Payment</div>
+                                <div className="text-base font-semibold text-[var(--base)]">
+                                    {translatePaymentStatus(order.payment.status)} ({order.payment.method})
+                                </div>
+                            </div>
+                            <div className="text-sm text-[var(--muted)]">
+                                <div className="text-xs uppercase tracking-[0.12em] text-[var(--dark-yellow)]">Courier</div>
+                                <button
+                                    className="ghost-button mt-1"
+                                    onClick={() => navigate(`/admin/couriers/${order.courier.id}`)}
+                                >
+                                    {order.courier.name} {order.courier.surname}{' '}
+                                    {order.courier.license_plate ? `(${order.courier.license_plate})` : ''}
+                                </button>
+                            </div>
+                            <div className="text-sm text-[var(--muted)]">
+                                <div className="text-xs uppercase tracking-[0.12em] text-[var(--dark-yellow)]">Address</div>
+                                <div className="text-base font-semibold text-[var(--base)]">
+                                    {order.address.street}, {order.address.city} {order.address.postcode}
+                                </div>
+                            </div>
                         </div>
-                    )}
-                </div>
+
+                        <div className="rounded-2xl border border-slate-200 p-4">
+                            <div className="text-sm font-semibold uppercase tracking-[0.12em] text-[var(--dark-yellow)]">
+                                Products
+                            </div>
+                            <div className="mt-2 space-y-2 text-sm text-[var(--muted)]">
+                                {order.products.map((product) => (
+                                    <div key={product.product.id} className="flex items-center justify-between">
+                                        <span>{product.product.name} ({product.ordered_amount} pcs)</span>
+                                        <span>{product.product.price} PLN</span>
+                                    </div>
+                                ))}
+                            </div>
+                            <div className="mt-3 flex justify-end text-base font-semibold text-[var(--base)]">
+                                Total {getTotalPrice(order)} PLN
+                            </div>
+                        </div>
+
+                        <div className="flex flex-wrap gap-3">
+                            {order.status !== 'Canceled' && order.status !== 'Delivered' && (
+                                <button
+                                    className="ghost-button bg-orange-100 text-orange-800"
+                                    onClick={cancelOrder}
+                                >
+                                    <CancelIcon width={20} height={20} color="text-orange-600" />
+                                    Cancel order
+                                </button>
+                            )}
+                            <button
+                                className="ghost-button bg-red-100 text-red-800"
+                                onClick={deleteOrder}
+                            >
+                                <DeleteIcon width={20} height={20} color="text-red-600" />
+                                Delete order
+                            </button>
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );
 }
 
-
 const mapStateToProps = (state: RootState) => ({ userData: state.user.user });
-
 
 export default connect(mapStateToProps)(OrderDetails);

@@ -87,11 +87,11 @@ export const getUserInfo = async (accessToken: string) => {
 
 export const updateUserInfo = async (accessToken: string, formData: any) => {
   const body = {
-    name: formData.Imię,
-    surname: formData.Nazwisko,
-    email: formData.Email,
-    phone: formData['Numer Telefonu'],
-    password: formData.Hasło,
+    name: formData.firstName ?? formData.Imię,
+    surname: formData.lastName ?? formData.Nazwisko,
+    email: formData.email ?? formData.Email,
+    phone: formData.phone ?? formData['Numer Telefonu'],
+    password: formData.password ?? formData.Hasło,
   }
 
   const response = await fetch(baseURL + '/user/me', {

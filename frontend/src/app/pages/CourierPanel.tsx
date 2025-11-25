@@ -1,178 +1,83 @@
-import { Link, Outlet } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import { getOrdersByCourier, deliverOrder } from '../requests'; 
-import { UserData } from '../redux/userSlice';
+import { Outlet } from 'react-router-dom';
 import { connect } from 'react-redux';
+import { getOrdersByCourier, deliverOrder } from '../requests';
+import { UserData } from '../redux/userSlice';
 import { Order } from '../models/Order';
 import { RootState } from '../store/mainStore';
 
-
-
 export function CourierPanelPage({ userData }: { userData: UserData }) {
     const [orders, setOrders] = useState<Order[]>([]);
-    
+
+    const fetchOrders = async () => {
+        try {
+            const data = await getOrdersByCourier(userData.access, userData.coid);
+            setOrders(data);
+        } catch (error) {
+            console.error('Failed to fetch orders:', error);
+        }
+    };
+
     useEffect(() => {
-        const fetchOrders = async () => {
-            try {
-                const data = await getOrdersByCourier(userData.access, userData.coid);
-                setOrders(data);
-            } catch (error) {
-                console.error('Failed to fetch orders:', error);
-            }
-        };
         fetchOrders();
     }, [userData.access]);
 
     const handleDeliverOrder = async (orderId: number) => {
-        await deliverOrder(userData.access ,orderId);
+        await deliverOrder(userData.access, orderId);
+        fetchOrders();
     };
 
     return (
-        <div
-            style={{
-                height: '100vh',
-                display: 'flex',
-                background: '#F3F4F6',
-                color: '#1E3A5F',
-                fontFamily: "'Playfair Display', serif",
-            }}
-        >
-            <nav
-                style={{
-                    width: '250px',
-                    background: '#1E3A5F',
-                    borderRight: '3px solid #FFC107',
-                    padding: '20px',
-                    color: '#F3F4F6',
-                }}
-            >
-                <ul
-                    style={{
-                        listStyle: 'none',
-                        padding: 0,
-                        margin: 0,
-                    }}
-                >
-                    {/* Sidebar left empty */}
-                </ul>
-            </nav>
-            <div
-                style={{
-                    flex: 1,
-                    padding: '40px',
-                }}
-            >
-                <h1
-                    style={{
-                        fontSize: '36px',
-                        marginBottom: '30px',
-                        position: 'relative',
-                        textAlign: 'center',
-                        fontWeight: 'bold',
-                    }}
-                >
-                    Panel Kuriera
-                    <span
-                        style={{
-                            position: 'absolute',
-                            left: 0,
-                            bottom: -10,
-                            width: '100%',
-                            height: '3px',
-                            backgroundColor: 'rgba(255, 193, 7, 0.8)',
-                        }}
-                    ></span>
-                </h1>
+        <div className="min-h-[70vh] bg-[var(--soft-surface)] text-[var(--navy)]">
+            <div className="page-container py-10 space-y-6">
                 <div>
-                    <ul
-                        style={{
-                            listStyle: 'none',
-                            padding: 0,
-                            margin: 0,
-                            maxHeight: '70vh',
-                            overflowY: 'auto',
-                        }}
-                    >
-                        {orders.length === 0 && (
-                            <p style={{ textAlign: 'center', color: '#A0AEC0' }}>Brak zamówień</p>
-                        )}
-                        {orders.map((order) => (
-                            <div
-                                key={order.id}
-                                style={{
-                                    display: 'flex',
-                                    justifyContent: 'space-between',
-                                    padding: '20px',
-                                    background: '#F3F4F6',
-                                    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-                                    borderRadius: '5px',
-                                    marginBottom: '20px',
-                                    transition: 'box-shadow 0.2s',
-                                }}
-                            >
-                                <div>
-                                    <h2 style={{ fontSize: '24px', fontWeight: 'bold' }}>
-                                        Zamówienie nr {order.id}
-                                    </h2>
-                                    <p style={{ fontSize: '16px', color: '#A0AEC0' }}>
-                                        {order.status}
-                                    </p>
-                                </div>
-                                <div style={{ textAlign: 'right' }}>
-                                    <p style={{ fontSize: '16px', color: '#A0AEC0' }}>
-                                        Zamówione {order.date}
-                                    </p>
-                                    <p style={{ fontSize: '16px', color: '#A0AEC0' }}>
-                                        Adres: {order.address.city}, {order.address.street}{' '} {order.address.postcode}
-                                    </p>
-                                    <div style={{ display: 'flex', gap: '5px' }}>
-                                        <p style={{ fontSize: '16px', color: '#A0AEC0' }}>
-                                            Produkty:
-                                        </p>
-                                        <ul style={{ marginLeft: '10px' }}>
-                                            {order.products.map((product, idx) => (
-                                                <li
-                                                    key={idx}
-                                                    style={{ fontSize: '16px', color: '#A0AEC0' }}
-                                                >
-                                                    {product.product.name} - {product.ordered_amount} szt. -{' '}
-                                                    {product.product.price} PLN
-                                                </li>
-                                            ))}
-                                        </ul>
-                                    </div>
-                                    <button
-                                        style={{
-                                            padding: '10px 20px',
-                                            background: order.status === 'Finalized' ? '#A0AEC0' : '#1E40AF',
-                                            color: '#F3F4F6',
-                                            border: 'none',
-                                            borderRadius: '5px',
-                                            cursor: order.status === 'Finalized' ? 'not-allowed' : 'pointer',
-                                            marginTop: '10px',
-                                        }}
-                                        onClick={async () => {
-                                            if (order.status !== 'Finalized' ) {
-                                                await handleDeliverOrder(order.id);
-                                                window.location.reload();
-                                            }
-                                        }}
-                                        disabled={order.status === 'Finalized'}
-                                    >
-                                        Dostarcz
-                                    </button>
-                                </div>
-                            </div>
-                        ))}
+                    <h1 className="text-3xl font-semibold">Courier panel</h1>
+                    <p className="text-sm text-[var(--muted)]">Mark deliveries and keep an eye on assigned orders.</p>
+                </div>
 
-                    </ul>
+                <div className="space-y-4">
+                    {orders.map((order) => (
+                        <div key={order.id} className="card p-5 space-y-2">
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <div className="text-lg font-semibold">Order #{order.id}</div>
+                                    <div className="text-xs uppercase tracking-[0.12em] text-[var(--muted)]">
+                                        {order.status}
+                                    </div>
+                                </div>
+                                <div className="text-sm text-[var(--muted)]">Placed {order.date}</div>
+                            </div>
+                            <div className="text-sm text-[var(--muted)]">
+                                Address: {order.address.city}, {order.address.street} {order.address.postcode}
+                            </div>
+                            <div className="text-sm text-[var(--muted)]">
+                                Products:
+                                <ul className="ml-4 list-disc">
+                                    {order.products.map((product, idx) => (
+                                        <li key={idx}>
+                                            {product.product.name} - {product.ordered_amount} pcs - {product.product.price} PLN
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                            <button
+                                className="pill-button w-fit"
+                                onClick={() => order.status !== 'Finalized' && handleDeliverOrder(order.id)}
+                                disabled={order.status === 'Finalized'}
+                            >
+                                {order.status === 'Finalized' ? 'Delivered' : 'Mark as delivered'}
+                            </button>
+                        </div>
+                    ))}
+                    {orders.length === 0 && (
+                        <p className="text-sm text-[var(--muted)]">No orders assigned.</p>
+                    )}
                 </div>
                 <Outlet />
             </div>
         </div>
     );
-
-};
+}
 
 const mapStateToProps = (state: RootState) => ({ userData: state.user.user });
 

@@ -1,117 +1,54 @@
 import React from 'react';
-import backgroundImage from '../../images/main_site_background.jpg'; // Adjust the relative path
-import { useNavigate } from "react-router-dom";
-
-
-const TriangleOverlay = () => {
-  return (
-    <div
-      style={{
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        width: '100%',
-        height: '100%',
-        overflow: 'hidden', // Prevent overflow
-        pointerEvents: 'none', // Prevent the triangle from blocking interactions with other content
-      }}
-    >
-      <div
-        style={{
-          position: 'absolute',
-          top: 0,
-          right: '30%',
-          width: 0,
-          height: 0,
-          borderLeft: '70vw solid transparent',
-          borderRight: '80vw solid transparent',
-          borderTop: '150vh solid rgba(30, 58, 95, 0.98)', // Jeans color equivalent (RGB: 30, 58, 95)
-        }}
-      ></div>
-    </div>
-  );
-};
-
+import { useNavigate } from 'react-router-dom';
 
 export function HomePage() {
-const navigate = useNavigate();
-    return (
-      <div
-        style={{
-          backgroundImage: `url(${backgroundImage})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          height: '100vh',
-          width: '100vw',
-          marginTop: '-4rem',
-        }}
-      >
-    <TriangleOverlay />
-        <h1 className="text-white text-5xl font-bold flex items-center h-full"
-          style={{
+  const navigate = useNavigate();
 
-                    fontFamily: "'Playfair Display', serif", // Artistic font
-                    fontWeight: 700, // Use a bold weight for emphasis
-//                     textShadow: '2px 2px 3px black, -2px -2px 3px black, 2px -2px 3px black, -2px 2px 3px black',
-                    position: 'relative',
-                    top: '-10rem', // Przesuwamy napis do góry
-                    textAlign: 'left', // Align the text to the left
-                     marginLeft: '5rem',
+  return (
+    <div className="min-h-[calc(100vh-80px)] bg-[var(--soft-surface)]">
+      <div className="page-container grid gap-10 py-12 lg:grid-cols-2 lg:items-center">
+        <div className="space-y-6">
+          <span className="inline-flex items-center rounded-full border border-[var(--dark-yellow)]/70 bg-white/80 px-4 py-2 text-xs font-semibold uppercase tracking-[0.15em] text-[var(--base)]">
+            Uberwear · clothing hub
+          </span>
+          <h1 className="text-4xl font-semibold leading-tight text-[var(--base)] sm:text-5xl">
+            Browse clothing stores, add to cart, and check out with a clean, minimal interface.
+          </h1>
+          <p className="text-base leading-relaxed text-[var(--muted)] sm:text-lg">
+            Explore shops, colors, and sizes, keep a lightweight cart, and finish payment and delivery without extra noise.
+          </p>
+          <div className="flex flex-wrap gap-3">
+            <button className="pill-button text-sm sm:text-base" onClick={() => navigate('/offer')}>
+              Browse stores
+            </button>
+            <button className="ghost-button text-sm sm:text-base" onClick={() => navigate('/create-account')}>
+              Create account
+            </button>
+          </div>
+        </div>
 
-                }}
-        >
-           Dostarczamy styl, <br /> który pasuje do Ciebie!
-        </h1>
-
-         <div
-        className="text-white font-playfair text-6xl"
-        style={{
-          fontFamily: "'Playfair Display', serif",
-          position: 'absolute', // Position relative to parent container
-          bottom: '12rem', // Adjust this value to place the text above the button
-          left: '77.5%', // Center horizontally
-          top: '65%',
-          transform: 'translateX(-50%)', // Center the text
-           textShadow: '4px 4px 6px black', // Add black shadow to the text
-        }}
-      >
-        Dołącz do nas!
+        <div className="card relative overflow-hidden p-6 shadow-lg">
+          <div className="absolute -left-10 -top-16 h-44 w-44 rounded-full bg-[var(--base)]/10 blur-3xl" />
+          <div className="absolute -right-10 bottom-0 h-36 w-36 rounded-full bg-[var(--deep-blue)]/10 blur-3xl" />
+          <div className="relative space-y-4">
+            <h2 className="text-2xl font-semibold text-[var(--base)]">What you can do</h2>
+            <ul className="space-y-3 text-sm text-[var(--muted)]">
+              <li className="flex items-start gap-2">
+                <span className="mt-[2px] inline-block h-2 w-2 rounded-full bg-[var(--dark-yellow)]" />
+                Explore stores by category and color, and view product details without signing in.
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="mt-[2px] inline-block h-2 w-2 rounded-full bg-[var(--deep-blue)]" />
+                Build a quick cart and move through payment and delivery steps without clutter.
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="mt-[2px] inline-block h-2 w-2 rounded-full bg-[var(--dark-yellow)]" />
+                Sign in to track orders, view loyalty points, and manage account details.
+              </li>
+            </ul>
+          </div>
+        </div>
       </div>
-
-      <button
-        onClick={() => navigate("/offer")}
-        className="bg-[#1E3A5F] text-white font-playfair py-8 px-16 rounded-full shadow-md text-3xl absolute"
-        style={{
-          fontFamily: "'Playfair Display', serif",
-          bottom: '22rem', // Adjust this value to place the button below the header
-          left: '8%',
-//           transform: 'translateX(-50%)', // Center the button horizontally
-          border: '2px solid #FFBF00', // Amber border color (adjust thickness as needed)
-          transition: 'all 0.3s ease-in-out', // Smooth transition for all properties
-        }}
-            onMouseEnter={(e) => (e.target as HTMLButtonElement).style.transform = 'scale(1.1)'} // Type assertion for HTMLButtonElement
-          onMouseLeave={(e) => (e.target as HTMLButtonElement).style.transform = 'scale(1)'} // Reset scale when hover endskkk
-      >
-        Odkryj ofertę
-      </button>
-
-        <button
-          className="bg-[#1E3A5F] text-white font-playfair py-8 px-16 rounded-full shadow-md text-3xl fixed bottom-32 right-64  "
-          style={{
-                fontFamily: "'Playfair Display', serif",
-                transition: 'all 0.3s ease-in-out', // Smooth transition for all properties
-                border: '2px solid #FFBF00', // Amber border color (adjust thickness as needed)
-          }}
-              onMouseEnter={(e) => (e.target as HTMLButtonElement).style.transform = 'scale(1.1)'} // Type assertion for HTMLButtonElement
-              onMouseLeave={(e) => (e.target as HTMLButtonElement).style.transform = 'scale(1)'} // Reset scale when hover endskkk
-
-           onClick={() => navigate("/create-account")}
-        >
-          Utwórz Konto
-        </button>
-
-      </div>
-    );
-  }
-
-
+    </div>
+  );
+}

@@ -31,7 +31,7 @@ class ShopUpdate(BaseModel):
 # Pobieranie listy sklepów z bazy
 @router.get("/shops")
 def get_shops(db: Session = Depends(get_db)):
-    shops = db.query(Shop).all()
+    shops = db.query(Shop).limit(1).all()
     shops_list = [shop.__dict__.copy() for shop in shops]
 
     for shop_dict in shops_list:

@@ -1,46 +1,25 @@
+import React from 'react';
+
 export function AboutPage() {
   return (
-    <div
-      style={{
-        height: '100vh',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        background: '#F3F4F6',
-        color: '#1E3A5F',
-        fontFamily: "'Playfair Display', serif",
-        flexDirection: 'column',
-        textAlign: 'center',
-        padding: '20px',
-      }}
-    >
-      <h1
-        style={{
-          position: 'relative',
-          fontSize: '2.5rem',
-          marginBottom: '1rem',
-        }}
-      >
-        O nas
-        <span
-          style={{
-            position: 'absolute',
-            left: 0,
-            bottom: -10,
-            width: '100%',
-            height: '5px',
-            backgroundColor: 'rgba(255, 193, 7, 0.8)',
-          }}
-        ></span>
-      </h1>
-      <p style={{ fontSize: '1.2rem', lineHeight: '1.6' }}>
-        Witaj w QuickFit – Twoim zaufanym partnerze w dostawie ubrań! Nasza misja to łączenie wygody, stylu i szybkości
-        w jedną usługę, która zrewolucjonizuje sposób, w jaki kupujesz ubrania.
-      </p>
-      <p style={{ fontSize: '1.2rem', lineHeight: '1.6', marginTop: '1rem' }}>
-        Dzięki naszej zaawansowanej logistyce i współpracy z najlepszymi markami, Twoje zamówienie dotrze do Ciebie
-        szybciej niż kiedykolwiek.
-      </p>
+    <div className="min-h-[70vh] bg-[var(--soft-surface)] text-[var(--base)]">
+      <div className="page-container py-12">
+        <div className="card p-8">
+          <div className="flex flex-col gap-4">
+            <div className="text-sm font-semibold uppercase tracking-[0.15em] text-[var(--dark-yellow)]">
+              About Uberwear
+            </div>
+            <h1 className="text-3xl font-semibold">We connect convenience, style, and speed</h1>
+            <p className="text-[var(--muted)] leading-relaxed">
+              Welcome to UberWear — your trusted partner for clothing delivery. Our mission is to blend comfort, style,
+              and speed into one experience that changes how you shop for clothes.
+            </p>
+            <p className="text-[var(--muted)] leading-relaxed">
+              With smart logistics and partnerships with top brands, your order gets to you faster than ever.
+            </p>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

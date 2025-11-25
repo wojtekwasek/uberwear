@@ -1,49 +1,32 @@
-import {Outlet, useNavigation, useLocation, useParams} from 'react-router-dom';
-// import Navbar from './components/Navbar';
-// import {Footer} from './components/Footer';
+import { Outlet, useNavigation } from 'react-router-dom';
 import ScrollToTop from 'react-scroll-to-top';
 import Navbar from './components/Navbar';
-import {useState} from 'react';
-import {ExpandableMenu} from './components/ExpandableMenu';
 
-export function Layout()
-{
+export function Layout() {
     const navigation = useNavigation();
-        const [isSidebarExpanded, setIsSidebarExpanded] = useState(false);
-        const location = useLocation();
-        const { color } = useParams();
 
-        const isOfferPage =
-        location.pathname.includes('/purchase/') ||
-        location.pathname.includes('/cart') || 
-        location.pathname.includes('/contact') ||
-        location.pathname.includes('/offer') ||
-        location.pathname.includes('/about') ;
-        console.log(color);  
+    return (
+        <>
+            <div className="min-h-screen bg-[var(--soft-surface)] text-[var(--text)]">
+                <Navbar />
 
-    return (<>
-        <div className="box-border flex flex-col bg-amber-50 ">
-            <Navbar
-                isSidebarExpanded={isSidebarExpanded}
-                setIsSidebarExpanded={setIsSidebarExpanded}
+                <main className="flex-1">
+                    {navigation.state === 'loading' && (
+                        <div className="flex items-center justify-center py-6 text-sm text-[var(--muted)]">
+                            Loading...
+                        </div>
+                    )}
+                    <div className="min-h-screen px-4 sm:px-6 py-6 sm:py-10">
+                        <Outlet />
+                    </div>
+                </main>
+            </div>
+            <ScrollToTop
+                smooth
+                className="flex items-center justify-center border border-[var(--dark-yellow)] bg-white text-[var(--base)] shadow-sm"
+                viewBox="0 0 256 256"
             />
-
-             {isOfferPage && (
-                    <ExpandableMenu
-                        isExpanded={isSidebarExpanded}
-                        setIsExpanded={setIsSidebarExpanded}
-                    />
-                )}
-            <main className="flex-grow">
-                {navigation.state === "loading" && <div className="loader loader-centered"/>}
-                <div className={`min-h-screen flex flex-col [&>*]:grow ${navigation.state === "loading" ? "loader-bg" : "opacity-100"}`}>
-                    <Outlet/>
-                </div>
-            </main>
-            {/* <Footer/> */}
-        </div>
-        <ScrollToTop smooth className="flex justify-center items-center" viewBox='0 0 256 256'/>
         </>
-    )
+    );
 }
 

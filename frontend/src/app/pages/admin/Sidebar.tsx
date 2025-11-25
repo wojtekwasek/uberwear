@@ -1,42 +1,26 @@
-import { Link } from "react-router-dom";
-
+import { Link } from 'react-router-dom';
 
 export function AdminSidebar() {
+    const links = [
+        { label: 'Profile', to: '/admin/data' },
+        { label: 'Orders', to: '/admin/orders' },
+        { label: 'Couriers', to: '/admin/couriers' },
+        { label: 'Clients', to: '/admin/clients' },
+    ];
+
     return (
-        <nav className="w-64 bg-[#1E3A5F] border-r-4 border-yellow-500 p-5 text-gray-100">
-            <ul className="list-none p-0 m-0">
-                <li className="mb-4 group hover:translate-x-4 transition-all duration-200">
-                    <Link
-                        to="/admin/data"
-                        className="no-underline text-gray-100 text-lg font-medium group-hover:text-gray-300 transition-all duration-200"
-                    >
-                        Twoje dane
-                    </Link>
-                </li>
-                <li className="mb-4 group hover:translate-x-4 transition-all duration-200">
-                    <Link
-                        to="/admin/orders"
-                        className="no-underline text-gray-100 text-lg font-medium group-hover:text-gray-300 transition-all duration-200"
-                    >
-                        Lista zamówień
-                    </Link>
-                </li>
-                <li className="mb-4 group hover:translate-x-4 transition-all duration-200">
-                    <Link
-                        to="/admin/couriers"
-                        className="no-underline text-gray-100 text-lg font-medium group-hover:text-gray-300 transition-all duration-200"
-                    >
-                        Lista kurierów
-                    </Link>
-                </li>
-                <li className="mb-4 group hover:translate-x-4 transition-all duration-200">
-                    <Link
-                        to="/admin/clients"
-                        className="no-underline text-gray-100 text-lg font-medium group-hover:text-gray-300 transition-all duration-200"
-                    >
-                        Lista klientów
-                    </Link>
-                </li>
+        <nav className="w-full">
+            <ul className="m-0 flex flex-wrap items-center gap-2 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm">
+                {links.map((link) => (
+                    <li key={link.to} className="list-none">
+                        <Link
+                            to={link.to}
+                            className="ghost-button text-sm"
+                        >
+                            {link.label}
+                        </Link>
+                    </li>
+                ))}
             </ul>
         </nav>
     );

@@ -1,23 +1,16 @@
 import React from 'react';
 import { AccountSidebar } from './AccountSidebar';
-import { connect } from 'react-redux';
-import { RootState } from '../store/mainStore';
-import { UserData } from '../redux/userSlice';
 
 export function AccountPageReturns() {
   return (
-    <div className="h-screen flex bg-gray-100 text-[#1E3A5F] font-playfair">
-      {/* Left Navigation Bar */}
-      <AccountSidebar />
-
-      {/* Main Content */}
-      <div className="flex-1 p-10">
-        <h1 className="text-4xl mb-8 relative font-bold text-center border-b-yellow-400 border-b-2">
-          Zwroty
-        </h1>
-        <ul>
-          {/* Render return item details here */}
-        </ul>
+    <div className="min-h-[60vh] bg-[var(--soft-surface)] text-[var(--base)]">
+      <div className="page-container py-10 space-y-6">
+        <AccountSidebar />
+        <h1 className="text-3xl font-semibold">Returns</h1>
+        <p className="text-sm text-[var(--muted)]">
+          Return handling is optional in this UI. When connected to the backend, partial returns can update stock and
+          refund amounts. This space stays minimal until those endpoints are wired.
+        </p>
       </div>
     </div>
   );

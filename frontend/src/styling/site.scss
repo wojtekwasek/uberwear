@@ -1,81 +1,88 @@
 @import 'tailwindcss/base';
 @import 'tailwindcss/components';
 @import 'tailwindcss/utilities';
+@import url('https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700&display=swap');
 
-html, body {
-    height: 100%;
-    width: 100%;
-      margin: 0; /* Remove any default margin */
-    padding: 0; /* Remove any default padding */
-    box-sizing: border-box;
-     overflow-x: hidden; /* Prevent horizontal scrolling */
-    background-image:url('/images/main_site_background.jpg');
-    background-size: cover; /* Ensures the image covers the entire screen */
-    background-position: center; /* Centers the background image */
-    background-repeat: no-repeat; /* Ensures the image doesn't repeat */
-    filter: brightness(0.85); /* Adjust the brightness */
-
-    --primary-color: #1D5EE2;
-    --primary-color-hover: #1949aa;
-    --secondary-color: #E2A11D;
+:root {
+  --base: #1f2937;
+  --deep-blue: #2f6bff;
+  --dark-yellow: #d8a400;
+  --soft-surface: #f8fafc;
+  --card: #ffffff;
+  --text: #0f172a;
+  --muted: #475569;
+  --radius: 14px;
+  --font-sans: 'Work Sans', system-ui, -apple-system, sans-serif;
 }
 
-.bg-primary-hover:hover {
-  background-color: var(--primary-color-hover);
+* {
+  box-sizing: border-box;
 }
-.category-tile {
-    transition: transform 0.3s, box-shadow 0.3s;
-  }
-  .category-tile:hover {
-    transform: scale(1.05); /* Slightly increase the size */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Add a shadow */
-  }  
+
+html,
+body {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  background: radial-gradient(circle at 20% 20%, #1f293710, transparent 25%),
+    radial-gradient(circle at 80% 0%, #2f6bff0f, transparent 25%),
+    var(--soft-surface);
+  color: var(--text);
+  font-family: var(--font-sans);
+}
 
 #root {
-    height: 100%;
-    width: 100%;
-    overflow-x: hidden;
-}
-#logInButton {
-    background-color: transparent;
-    position: fixed;
-    color: #007BFF; /* Text color */
-    font-family: 'Arial', sans-serif; /* Nice, clean font */
-    font-size: 16px; /* Adjust font size */
-    top: 10px; /* 10px from the top */
-    right: 10px; /* 10px from the right */
-    padding: 10px 20px;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
+  height: 100%;
+  width: 100%;
 }
 
-
+a {
+  color: inherit;
+}
 
 .page-container {
-    @apply mx-auto max-w-screen-2xl px-4 py-4;
+  @apply mx-auto max-w-6xl px-4 sm:px-6;
 }
 
-
 .page-container-no-padding {
-    @apply mx-auto max-w-screen-2xl;
+  @apply mx-auto max-w-6xl;
 }
 
 .text-search-input {
-    @apply block font-normal rounded-md border-0 py-2 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary md:text-base text-sm sm:leading-6
+  @apply block rounded-lg border border-slate-200 bg-white/90 py-2 px-3 text-sm font-medium text-slate-800 shadow-sm placeholder:text-slate-400 focus:border-[var(--deep-blue)] focus:outline-none focus:ring-2 focus:ring-[var(--deep-blue)] focus:ring-offset-2;
 }
 
 .filter-field {
-    @apply text-search-input mr-2 text-gray-900 lg:my-2 my-0;
+  @apply text-search-input mr-2 text-gray-900 lg:my-2 my-0;
 }
 
+.ghost-button {
+  @apply inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition-all duration-150 hover:-translate-y-0.5 hover:shadow-md;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  color: var(--base);
+}
 
-@keyframes rotate-clockwise {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
+.pill-button {
+  @apply inline-flex items-center justify-center gap-2 rounded-full px-4 py-2 text-sm font-semibold text-white shadow-sm transition-all duration-150 hover:-translate-y-0.5 hover:shadow-md;
+  background: var(--deep-blue);
+  border: 2px solid var(--dark-yellow);
+}
+
+.card {
+  background: var(--card);
+  border: 1px solid #e5e7eb;
+  border-radius: var(--radius);
+  box-shadow: 0 8px 30px rgba(15, 31, 61, 0.08);
+}
+
+.category-tile {
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.category-tile:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 30px rgba(15, 31, 61, 0.1);
 }

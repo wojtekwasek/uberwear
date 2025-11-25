@@ -1,14 +1,13 @@
-// NYHoodies.tsx
 import React, { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom'; // useNavigate instead of useHistory
+import { useNavigate, useParams } from 'react-router-dom';
 import { Color } from '../../models/Color';
 import { getColors } from '../../requests';
 
 export function CategoryPage() {
-    const navigate = useNavigate(); // Updated hook
+    const navigate = useNavigate();
     const { shopId, category } = useParams<any>();
-
     const [colors, setColors] = useState<Color[]>([]);
+
     useEffect(() => {
         const fetchColors = async () => {
             try {
@@ -20,58 +19,34 @@ export function CategoryPage() {
         };
 
         fetchColors();
-    }, []);
+    }, [shopId, category]);
 
-    const handleSelectHoodie = (color: string) => {
-        // Use navigate instead of history.push()
+    const handleSelect = (color: string) => {
         navigate(`/offer/${shopId}/category/${category}/color/${color}/purchase`);
     };
 
     return (
-        <div
-            style={{
-                minHeight: '100vh',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                background: '#F3F4F6',
-                color: '#1E3A5F',
-                fontFamily: "'Playfair Display', serif",
-                padding: '20px',
-            }}
-        >
-            <h1 style={{ marginBottom: '40px', fontSize: '2.5rem', fontWeight: 'bold' }}>Wybierz {category}</h1>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '20px', justifyContent: 'center' }}>
-                {colors.map((color) => (
-                    <div
-                        key={color.color}
-                        className="hoodie-tile"
-                        style={{
-                            width: '300px',
-                            borderRadius: '8px',
-                            background: '#fff',
-                            boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-                            overflow: 'hidden',
-                            textAlign: 'center',
-                            cursor: 'pointer',
-                            transition: 'transform 0.3s',
-                        }}
-                        onClick={() => handleSelectHoodie(color.color)}
-                    >
-                        <img
-                            src={`${color.image}`}
-                            alt={`${color.color} ${category}`}
-                            style={{
-                                width: '300px',
-                                height: '300px',
-                                objectFit: 'scale-down',
-                            }}
-                        />
-                        <h2 style={{ padding: '10px', background: '#1E3A5F', color: '#fff' }}>
-                            {`${color.product} - kolor ${color.color.toLowerCase()}`}
-                        </h2>
-                    </div>
-                ))}
+        <div className="min-h-[70vh] bg-[var(--soft-surface)] text-[var(--navy)]">
+            <div className="page-container py-10">
+                <h1 className="text-3xl font-semibold">Pick a color</h1>
+                <div className="mt-6 grid gap-6 sm:grid-cols-2 md:grid-cols-3">
+                    {colors.map((color) => (
+                        <button
+                            key={color.color}
+                            className="category-tile card overflow-hidden text-left transition hover:-translate-y-1"
+                            onClick={() => handleSelect(color.color)}
+                        >
+                            <img
+                                src={`${color.image}`}
+                                alt={`${color.color} ${category}`}
+                                className="h-44 w-full bg-white object-contain"
+                            />
+                            <div className="p-3 text-lg font-semibold text-[var(--navy)]">
+                                {color.product} · {color.color.toLowerCase()}
+                            </div>
+                        </button>
+                    ))}
+                </div>
             </div>
         </div>
     );
