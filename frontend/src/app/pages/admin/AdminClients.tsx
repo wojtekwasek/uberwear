@@ -12,25 +12,64 @@ const AdminClients = ({ userData }: { userData: UserData }) => {
     const [clientList, setClientList] = useState<Client[]>([]);
     const [startIndex, setStartIndex] = useState(0);
     const [pageSize] = useState(10);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [searchInput, setSearchInput] = useState('');
 
-    const fetchClients = async (start: number) => {
+    const fetchClients = async (start: number, search: string) => {
         try {
-            const clients = await getClients(userData.access, start, pageSize);
+            const clients = await getClients(userData.access, start, pageSize, search);
             setClientList(clients);
         } catch (error) {
             console.error('Failed to fetch clients:', error);
         }
     };
 
+    const handleSearch = () => {
+        setStartIndex(0);
+        setSearchQuery(searchInput);
+    };
+
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === 'Enter') {
+            handleSearch();
+        }
+    };
+
     useEffect(() => {
-        fetchClients(startIndex);
-    }, [startIndex]);
+        fetchClients(startIndex, searchQuery);
+    }, [startIndex, searchQuery]);
 
     return (
         <div className="min-h-[70vh] bg-[var(--soft-surface)] text-[var(--base)]">
             <div className="page-container py-10 space-y-6">
                 <AdminSidebar />
                 <h1 className="text-3xl font-semibold mb-6">All clients</h1>
+                
+                <div className="flex gap-2 mb-4">
+                    <input
+                        type="text"
+                        placeholder="Search by name, surname or email..."
+                        value={searchInput}
+                        onChange={(e) => setSearchInput(e.target.value)}
+                        onKeyDown={handleKeyDown}
+                        className="flex-1 px-4 py-2 border border-[var(--muted)] rounded-md bg-[var(--surface)] text-[var(--base)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
+                    />
+                    <button
+                        onClick={handleSearch}
+                        className="px-4 py-2 bg-[var(--accent)] text-white rounded-md hover:opacity-90 transition"
+                    >
+                        Search
+                    </button>
+                    {searchQuery && (
+                        <button
+                            onClick={() => { setSearchInput(''); setSearchQuery(''); setStartIndex(0); }}
+                            className="ghost-button"
+                        >
+                            Clear
+                        </button>
+                    )}
+                </div>
+
                 <div className="flex flex-col gap-4">
                     {clientList.length === 0 && (
                         <p className="text-sm text-[var(--muted)]">No clients found.</p>
