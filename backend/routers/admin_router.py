@@ -17,9 +17,20 @@ router = APIRouter()
 def get_clients(
     start_index: int = 0,
     limit: int = 50,
+    search: str = None,
     db: Session = Depends(get_db), 
     user: User = Depends(get_current_active_admin)):
-    client_users = db.query(User).filter(User.user_type == "Client").offset(start_index).limit(limit).all()
+    query = db.query(User).filter(User.user_type == "Client")
+    
+    if search:
+        search_term = f"%{search}%"
+        query = query.filter(
+            (User.name.ilike(search_term)) | 
+            (User.surname.ilike(search_term)) |
+            (User.email.ilike(search_term))
+        )
+    
+    client_users = query.offset(start_index).limit(limit).all()
 
     clients_data = []
 
@@ -83,10 +94,20 @@ def get_client(client_id: int, db: Session = Depends(get_db), user: User = Depen
 def get_couriers(
     start_index: int = 0,
     limit: int = 50,
+    search: str = None,
     db: Session = Depends(get_db), 
     user: User = Depends(get_current_active_admin)):
-
-    courier_users = db.query(User).filter(User.user_type == "Courier").offset(start_index).limit(limit).all()
+    query = db.query(User).filter(User.user_type == "Courier")
+    
+    if search:
+        search_term = f"%{search}%"
+        query = query.filter(
+            (User.name.ilike(search_term)) | 
+            (User.surname.ilike(search_term)) |
+            (User.email.ilike(search_term))
+        )
+    
+    courier_users = query.offset(start_index).limit(limit).all()
 
     couriers_data = []
 

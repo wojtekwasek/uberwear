@@ -33,8 +33,9 @@ export const requestDeleteOrder = async (accessToken: string, orderId: string) =
     return response.json();
 }
 
-export const getCouriers = async (accessToken: string, index: number = 0, limit: number = 50) => {
-    const response = await fetch(baseURL + `/admin/couriers?start_index=${index}&limit=${limit}`, {
+export const getCouriers = async (accessToken: string, index: number = 0, limit: number = 50, search: string = '') => {
+    const searchParam = search ? `&search=${encodeURIComponent(search)}` : '';
+    const response = await fetch(baseURL + `/admin/couriers?start_index=${index}&limit=${limit}${searchParam}`, {
         method: 'GET',
         headers: {
             'accept': 'application/json',
@@ -112,8 +113,9 @@ export const getClientOrders = async (accessToken: string, clientId: string) => 
 }
 
 
-export const getClients = async (accessToken: string, index: number = 0, limit: number = 50) => {
-    const response = await fetch(baseURL + `/admin/clients?start_index=${index}&limit=${limit}`, {
+export const getClients = async (accessToken: string, index: number = 0, limit: number = 50, search: string = '') => {
+    const searchParam = search ? `&search=${encodeURIComponent(search)}` : '';
+    const response = await fetch(baseURL + `/admin/clients?start_index=${index}&limit=${limit}${searchParam}`, {
         method: 'GET',
         headers: {
             'accept': 'application/json',
