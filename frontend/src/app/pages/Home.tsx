@@ -1,5 +1,8 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import timerIcon from '../../images/timer.png';
+import shieldIcon from '../../images/shield.png';
+import storeIcon from '../../images/store.png';
 
 export function HomePage() {
   const navigate = useNavigate();
@@ -12,7 +15,7 @@ export function HomePage() {
             Uberwear · clothing hub
           </span>
           <h1 className="text-4xl font-semibold leading-tight text-[var(--base)] sm:text-5xl">
-            Browse clothing stores, add to cart, and check out with a clean, minimal interface.
+          Clothes that fit your life.
           </h1>
           <p className="text-base leading-relaxed text-[var(--muted)] sm:text-lg">
             Explore shops, colors, and sizes, keep a lightweight cart, and finish payment and delivery without extra noise.
@@ -47,6 +50,27 @@ export function HomePage() {
               </li>
             </ul>
           </div>
+        </div>
+      </div>
+
+      <div className="flex justify-center gap-6 pb-12">
+        <div className="card flex w-64 flex-col items-center gap-3 px-6 py-4 shadow-lg">
+          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-white shadow-sm">
+            <img src={timerIcon} alt="Quick service" className="h-10 w-10 object-contain" />
+          </div>
+          <div className="text-lg font-semibold text-[var(--base)]">Quick service</div>
+        </div>
+        <div className="card flex w-64 flex-col items-center gap-3 px-6 py-4 shadow-lg">
+          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-white shadow-sm">
+            <img src={shieldIcon} alt="Satisfaction guaranteed" className="h-10 w-10 object-contain" />
+          </div>
+          <div className="text-center text-lg font-semibold text-[var(--base)]">Satisfaction guaranteed</div>
+        </div>
+        <div className="card flex w-64 flex-col items-center gap-3 px-6 py-4 shadow-lg">
+          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-white shadow-sm">
+            <img src={storeIcon} alt="Trusted stores" className="h-10 w-10 object-contain" />
+          </div>
+          <div className="text-center text-lg font-semibold text-[var(--base)]">Trusted stores</div>
         </div>
       </div>
     </div>

@@ -1,6 +1,7 @@
 import { enqueueSnackbar } from 'notistack';
 import { connect } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import mainLogo from '../../images/main-logo.png';
 import { setUserDataThunk, UserData } from '../redux/userSlice';
 import { AppDispatch, RootState } from '../store/mainStore';
 
@@ -8,9 +9,6 @@ interface Props {
     userData: UserData;
     setUserData(data: UserData): void;
 }
-
-const brandIcon =
-    'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none"><rect x="4" y="8" width="40" height="28" rx="10" fill="%23d8a400"/><path d="M10 28c6-3 10-3 16 0 6 3 10 3 12 0" stroke="%231f2937" stroke-width="3" stroke-linecap="round"/><circle cx="17" cy="30" r="3" fill="%231f2937"/><circle cx="31" cy="30" r="3" fill="%231f2937"/></svg>';
 
 function Navbar({ userData, setUserData }: Props) {
     const navigate = useNavigate();
@@ -45,18 +43,23 @@ function Navbar({ userData, setUserData }: Props) {
     }
 
     return (
-        <nav className="sticky top-0 z-50 border-b border-slate-200 bg-white/95 text-[var(--base)] shadow-sm backdrop-blur">
+        <nav
+            className="sticky top-0 z-50 border-b border-slate-200 text-[var(--base)] shadow-sm backdrop-blur"
+            style={{
+                background: 'linear-gradient(90deg, #0C2E83 41%, rgba(0,0,0,0.83) 100%)',
+            }}
+        >
             <div className="page-container flex items-center justify-between py-3">
                 <div
                     className="flex cursor-pointer items-center gap-3 rounded-full px-2 py-1 transition hover:-translate-y-0.5"
                     onClick={() => navigate('/')}
                 >
-                    <div className="h-10 w-10 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-                        <img src={brandIcon} alt="Uberwear logo" className="h-full w-full" />
+                    <div className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-2xl border border-slate-200 bg-[var(--dark-yellow)] shadow-sm">
+                        <img src={mainLogo} alt="Uberwear logo" className="h-7 w-7 object-contain" />
                     </div>
                     <div className="leading-tight">
-                        <div className="text-lg font-semibold">Uberwear</div>
-                        <div className="text-xs text-[var(--muted)]">clothing hub</div>
+                        <div className="text-lg font-semibold text-white">Uberwear</div>
+                        <div className="text-xs text-white/80">clothing delivery</div>
                     </div>
                 </div>
 
