@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { enqueueSnackbar } from 'notistack';
 import { connect } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
@@ -12,6 +13,7 @@ interface Props {
 
 function Navbar({ userData, setUserData }: Props) {
     const navigate = useNavigate();
+    const [menuOpen, setMenuOpen] = useState(false);
 
     const handleLogout = () => {
         setUserData({
@@ -42,6 +44,110 @@ function Navbar({ userData, setUserData }: Props) {
         navLinks.push({ label: 'Courier', onClick: () => navigate('/courier') });
     }
 
+    const MenuButton = () => (
+        <button
+            type="button"
+            aria-label="Toggle navigation"
+            className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/30 bg-white/10 text-white sm:hidden"
+            onClick={() => setMenuOpen((prev) => !prev)}
+        >
+            <div className="relative h-6 w-6">
+                <span
+                    className={`absolute left-0 block h-0.5 w-6 bg-white transition-all duration-200 ${
+                        menuOpen ? 'top-3 rotate-45' : 'top-1'
+                    }`}
+                />
+                <span
+                    className={`absolute left-0 block h-0.5 w-6 bg-white transition-all duration-200 ${
+                        menuOpen ? 'opacity-0' : 'top-3'
+                    }`}
+                />
+                <span
+                    className={`absolute left-0 block h-0.5 w-6 bg-white transition-all duration-200 ${
+                        menuOpen ? 'top-3 -rotate-45' : 'top-5'
+                    }`}
+                />
+            </div>
+        </button>
+    );
+
+    const LinkButtons = () => (
+        <>
+            {navLinks.map((link) => (
+                <button
+                    key={link.label}
+                    type="button"
+                    className="ghost-button text-white sm:text-[var(--base)]"
+                    onClick={() => {
+                        link.onClick();
+                        setMenuOpen(false);
+                    }}
+                >
+                    {link.label}
+                </button>
+            ))}
+            <button
+                type="button"
+                className="ghost-button text-white sm:text-[var(--base)]"
+                onClick={() => {
+                    navigate('/cart');
+                    setMenuOpen(false);
+                }}
+            >
+                Cart
+            </button>
+            {userData.type && userData.name ? (
+                <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-2">
+                    <button
+                        type="button"
+                        className="ghost-button text-white sm:text-[var(--base)]"
+                        onClick={() => {
+                            if (userData.type === 'Admin') navigate('/admin');
+                            else if (userData.type === 'Courier') navigate('/courier');
+                            else navigate('/account/data');
+                            setMenuOpen(false);
+                        }}
+                    >
+                        Hi, {userData.name}
+                    </button>
+                    <button
+                        type="button"
+                        className="pill-button bg-[var(--dark-yellow)] text-[var(--base)] border-[var(--dark-yellow)]"
+                        onClick={() => {
+                            handleLogout();
+                            setMenuOpen(false);
+                        }}
+                    >
+                        Sign out
+                    </button>
+                </div>
+            ) : (
+                <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-2">
+                    <button
+                        type="button"
+                        className="ghost-button text-white sm:text-[var(--base)]"
+                        onClick={() => {
+                            navigate('/login');
+                            setMenuOpen(false);
+                        }}
+                    >
+                        Sign in
+                    </button>
+                    <button
+                        type="button"
+                        className="pill-button"
+                        onClick={() => {
+                            navigate('/create-account');
+                            setMenuOpen(false);
+                        }}
+                    >
+                        Create account
+                    </button>
+                </div>
+            )}
+        </>
+    );
+
     return (
         <nav
             className="sticky top-0 z-50 border-b border-slate-200 text-[var(--base)] shadow-sm backdrop-blur"
@@ -63,65 +169,21 @@ function Navbar({ userData, setUserData }: Props) {
                     </div>
                 </div>
 
-                <div className="flex flex-wrap items-center justify-end gap-2 sm:gap-3">
-                    {navLinks.map((link) => (
-                        <button
-                            key={link.label}
-                            type="button"
-                            className="ghost-button"
-                            onClick={link.onClick}
-                        >
-                            {link.label}
-                        </button>
-                    ))}
-                    <button
-                        type="button"
-                        className="ghost-button"
-                        onClick={() => navigate('/cart')}
-                    >
-                        Cart
-                    </button>
-                    {userData.type && userData.name ? (
-                        <div className="flex items-center gap-2">
-                            <button
-                                type="button"
-                                className="ghost-button"
-                                onClick={() => {
-                                    if (userData.type === 'Admin') navigate('/admin');
-                                    else if (userData.type === 'Courier') navigate('/courier');
-                                    else navigate('/account/data');
-                                }}
-                            >
-                                Hi, {userData.name}
-                            </button>
-                            <button
-                                type="button"
-                                className="pill-button bg-[var(--dark-yellow)] text-[var(--base)] border-[var(--dark-yellow)]"
-                                onClick={handleLogout}
-                            >
-                                Sign out
-                            </button>
-                        </div>
-                    ) : (
-                        <div className="flex items-center gap-2">
-                            <button
-                                type="button"
-                                className="ghost-button"
-                                onClick={() => navigate('/login')}
-                            >
-                                Sign in
-                            </button>
-                            <button
-                                type="button"
-                                className="pill-button"
-                                onClick={() => navigate('/create-account')}
-                            >
-                                Create account
-                            </button>
-                        </div>
-                    )}
+                <div className="flex items-center gap-3">
+                    <div className="hidden flex-wrap items-center justify-end gap-2 sm:flex sm:gap-3">
+                        <LinkButtons />
+                    </div>
+                    <MenuButton />
                 </div>
             </div>
+
+            {menuOpen && (
+                <div className="sm:hidden">
+                    <div className="flex flex-col gap-3 border-t border-white/20 bg-[rgba(0,0,0,0.65)] px-4 py-4 text-white">
+                        <LinkButtons />
+                    </div>
+                </div>
+            )}
         </nav>
     );
 }
