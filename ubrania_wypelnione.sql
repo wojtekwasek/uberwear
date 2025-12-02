@@ -18356,7 +18356,7 @@ CREATE TABLE `user` (
   `Password` varchar(255) NOT NULL,
   `User_type` enum('Admin','Courier','Client') NOT NULL,
   `Phone` varchar(20) NOT NULL,
-  `Created_at` date NOT NULL DEFAULT current_timestamp(),
+  `Created_at` date NOT NULL,
   `Status` enum('Active','Inactive') NOT NULL,
   `Last_login` date DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;

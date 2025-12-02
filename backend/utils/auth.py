@@ -11,20 +11,19 @@ from models.tables.courier import Courier
 from utils.config import cfg
 from utils.database import get_db   
 from models.tables.user import User, UserType
+import bcrypt
 
 SECRET_KEY = cfg().AUTH_SECRET
 TOKEN_EXPIRATION = cfg().TOKEN_EXPIRATION_MINUTES
 ALGORITHM = "HS256"
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-
 oauth2_scheme = HTTPBearer()
 
 def verify_password(plain_password, hashed_password):
-    return pwd_context.verify(plain_password, hashed_password)
+    return bcrypt.checkpw(plain_password.encode('utf-8'), hashed_password.encode('utf-8'))
 
 def get_password_hash(password):
-    return pwd_context.hash(password)
+    return bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     to_encode = data.copy()

@@ -10,5 +10,5 @@ def choose_courier(db: Session):
     available_couriers = db.query(Courier).all()
     if not available_couriers:
         return None
-    random.shuffle(available_couriers)
-    return available_couriers[0]
+    #random.shuffle(available_couriers)
+    return available_couriers[-1]
