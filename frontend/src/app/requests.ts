@@ -1,7 +1,7 @@
 import { UserData } from "./redux/userSlice";
 
 //export const baseURL = 'https://quickfit.villyware.com/api';
-export const baseURL = 'http://localhost:8000';
+export const baseURL = 'http://localhost:8015';
 
 export const getClientID = async (accessToken: string) => {
   const response = await fetch(baseURL + '/user/me', {
