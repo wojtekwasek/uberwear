@@ -106,8 +106,8 @@ export const updateUserInfo = async (accessToken: string, formData: any) => {
   return response.json();
 };
 
-export const getOrders = async (accessToken: string) => {
-  const response = await fetch(baseURL + '/orders', {
+export const getOrders = async (accessToken: string, skip: number = 0, limit: number = 10) => {
+  const response = await fetch(`${baseURL}/orders?skip=${skip}&limit=${limit}`, {
     method: 'GET',
     headers: {
       'accept': 'application/json',

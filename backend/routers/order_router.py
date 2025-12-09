@@ -145,8 +145,14 @@ def get_orders_by_courier(courier_id: int, db: Session = Depends(get_db), curren
 
 
 @router.get("/orders")
-def get_all_orders(db: Session = Depends(get_db), current_user: User = Depends(get_current_active_admin)):
-    orders = db.query(Order).all()
+def get_all_orders(
+    skip: int = 0,
+    limit: int = 10,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_active_admin)
+):
+    total = db.query(Order).count()
+    orders = db.query(Order).offset(skip).limit(limit).all()
 
     return_list = []
 
@@ -203,7 +209,12 @@ def get_all_orders(db: Session = Depends(get_db), current_user: User = Depends(g
             'products': products_list,
         })
 
-    return return_list
+    return {
+        'total': total,
+        'skip': skip,
+        'limit': limit,
+        'orders': return_list
+    }
 
 @router.get("/orders/{order_id}")
 def get_order(order_id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_active_user)):
